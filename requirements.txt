@@ -1,0 +1,5 @@
+python-dotenv
+numpy
+tqdm
+scikit-learn
+matplotlib
