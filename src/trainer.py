@@ -122,10 +122,19 @@ class Trainer:
         logger.info(message)
     
     def evaluate(self, x, y):
-        y_pred = self.model(cp.array(x))
-        error = self.loss(y_pred, cp.array(y))
-        if self.config.trainer.is_accuracy:
-            accuracy = self.accuracy(y_pred, cp.array(y))
+        batch_size = self.config.trainer.batch_size
+        error = 0
+        is_accuracy = self.config.trainer.is_accuracy
+        if is_accuracy: accuracy = 0
+        for i in range(0, len(x), batch_size):
+            x_bs = cp.array(x[i:i+batch_size])
+            y_bs = cp.array(y[i:i+batch_size])
+            y_pred = self.model(x_bs)
+            error += self.loss(y_pred, y_bs) * len(y_bs)
+            if is_accuracy: accuracy += self.accuracy(y_pred, y_bs) * len(y_bs)
+        error /= len(x)
+        if is_accuracy:
+            accuracy /= len(x)
             message = "Test loss:{}  Test accuracy:{}".format(error, accuracy)
         else:
             message = "Test loss:{}".format(error)

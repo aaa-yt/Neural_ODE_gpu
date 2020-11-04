@@ -16,13 +16,22 @@ class NeuralODEModel:
         self.dim_out = config.model.dim_out
         self.max_time = config.model.max_time
         self.division = config.model.division
+        # パラメータの初期値 = 0
         #alpha = np.zeros(shape=(self.division, self.dim_out), dtype=np.float32)
         #beta = np.zeros(shape=(self.division, self.dim_in, self.dim_in), dtype=np.float32)
         #gamma = np.zeros(shape=(self.division, self.dim_in), dtype=np.float32)
-        eps = 1e-8
-        alpha = eps * np.ones(shape=(self.division, self.dim_out), dtype=np.float32)
-        beta = eps * np.ones(shape=(self.division, self.dim_in, self.dim_in), dtype=np.float32)
-        gamma = eps * np.ones(shape=(self.division, self.dim_in), dtype=np.float32)
+
+        # パラメータの初期値 = eps = 1e-8
+        #eps = 1e-8
+        #alpha = eps * np.ones(shape=(self.division, self.dim_out), dtype=np.float32)
+        #beta = eps * np.ones(shape=(self.division, self.dim_in, self.dim_in), dtype=np.float32)
+        #gamma = eps * np.ones(shape=(self.division, self.dim_in), dtype=np.float32)
+
+        # パラメータの初期値 = 一様分布
+        alpha = np.random.uniform(low=np.sqrt(3. / self.dim_out), high=np.sqrt(3. / self.dim_out), size=(self.division, self.dim_out)).astype(np.float32)
+        beta = np.random.uniform(low=np.sqrt(3. / self.dim_in), high=np.sqrt(3. / self.dim_in), size=(self.division, self.dim_in, self.dim_in)).astype(np.float32)
+        gamma = np.random.uniform(low=np.sqrt(3. / self.dim_in), high=np.sqrt(3. / self.dim_in), size=(self.division, self.dim_in)).astype(np.float32)
+
         self.params = (alpha, beta, gamma)
         self.A = np.eye(self.dim_out, self.dim_in, dtype=np.float32)
         self.function, self.d_function = string_to_function(config.model.function_type)

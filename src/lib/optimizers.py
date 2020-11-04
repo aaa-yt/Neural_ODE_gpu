@@ -80,6 +80,17 @@ class AdaDelta(Optimizer):
 
 
 def get(config: Config):
+    optimizer_type = config.trainer.optimizer_type.lower()
+    if optimizer_type == "momentum":
+        return Momentum(config)
+    elif optimizer_type == "adagrad":
+        return AdaGrad(config)
+    elif optimizer_type == "rmsprop":
+        return RMSprop(config)
+    else:
+        return SGD(config)
+
+    '''
     tc = config.trainer
     all_optimizer = {
         "sgd": SGD(config=config),
@@ -94,3 +105,4 @@ def get(config: Config):
         return all_optimizer[optimizer_type]
     else:
         return all_optimizer["sgd"]
+    '''
